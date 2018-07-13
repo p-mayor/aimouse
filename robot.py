@@ -1,24 +1,5 @@
 import numpy as np
 
-class Sensor:
-    def __init__(self, sensors):
-        self.sensors = sensors
-
-    def distance(self, steering):
-        steering_sensor_index_map = {
-            Steering.L : 0,
-            Steering.F : 1,
-            Steering.R : 2
-        }
-        return self.sensors[steering_sensor_index_map[steering]]
-
-    def isDeadEnd(self):
-        return max(self.sensors)==0
-    #both sides are walls
-    def isOneWay(self):
-        return self.sensors[0]==0 and self.sensors[1]>0 and self.sensors[2]==0
-
-
 class Robot(object):
     def __init__(self, maze_dim):
         '''
