@@ -1,5 +1,24 @@
 import numpy as np
 
+class Sensor:
+    def __init__(self, sensors):
+        self.sensors = sensors
+
+    def distance(self, steering):
+        steering_sensor_index_map = {
+            Steering.L : 0,
+            Steering.F : 1,
+            Steering.R : 2
+        }
+        return self.sensors[steering_sensor_index_map[steering]]
+
+    def isDeadEnd(self):
+        return max(self.sensors)==0
+    #both sides are walls
+    def isOneWay(self):
+        return self.sensors[0]==0 and self.sensors[1]>0 and self.sensors[2]==0
+
+
 class Robot(object):
     def __init__(self, maze_dim):
         '''
@@ -13,7 +32,8 @@ class Robot(object):
         self.heading = 'up'
         self.maze_dim = maze_dim
         self.map = np.zeros((self.maze_dim, self.maze_dim))
-        print self.map
+        self.map[0,0] = 1
+        #print self.map
 
     def next_move(self, sensors):
         '''
@@ -36,6 +56,7 @@ class Robot(object):
         the maze) then returing the tuple ('Reset', 'Reset') will indicate to
         the tester to end the run and return the robot to the start.
         '''
+        #print sensors
 
         rotation = 0
         movement = 0
