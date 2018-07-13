@@ -12,6 +12,8 @@ class Robot(object):
         self.location = [0, 0]
         self.heading = 'up'
         self.maze_dim = maze_dim
+        self.map = np.zeros((self.maze_dim, self.maze_dim))
+        print self.map
 
     def next_move(self, sensors):
         '''
