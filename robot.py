@@ -14,7 +14,7 @@ class Robot(object):
         self.maze_dim = maze_dim
         self.map = np.zeros((self.maze_dim, self.maze_dim))
         self.map[0,0] = 1
-        #print self.map
+        print self.map
 
     def next_move(self, sensors):
         '''
@@ -37,7 +37,7 @@ class Robot(object):
         the maze) then returing the tuple ('Reset', 'Reset') will indicate to
         the tester to end the run and return the robot to the start.
         '''
-        #print sensors
+        print sensors
 
         rotation = 0
         movement = 0
