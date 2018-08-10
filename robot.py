@@ -45,100 +45,44 @@ class Robot(object):
         # check for 1 way paths
         if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0:
             rotation = -90
-            if self.heading == 'up':
-                self.heading = 'left'
-            if self.heading == 'left':
-                self.heading = 'down'
-            if self.heading == 'down':
-                self.heading = 'right'
-            if self.heading == 'right':
-                self.heading = 'up'
         if sensors[0] == 0 and sensors[1] > 0 and sensors[2] == 0:
             rotation = 0
         if sensors[0] == 0 and sensors[1] == 0 and sensors[2] > 0:
-            rotation = +90
-            if self.heading == 'up':
-                self.heading = 'right'
-            if self.heading == 'left':
-                self.heading = 'up'
-            if self.heading == 'down':
-                self.heading = 'left'
-            if self.heading == 'right':
-                self.heading = 'down'
+            rotation = 90
         # check for 3 way paths
         if sensors[0] > 0 and sensors[1] > 0 and sensors[2] > 0:
             rotation =  random.randrange(-90, 90, 90)
-            if rotation == -90:
-                if self.heading == 'up':
-                    self.heading = 'left'
-                if self.heading == 'left':
-                    self.heading = 'down'
-                if self.heading == 'down':
-                    self.heading = 'right'
-                if self.heading == 'right':
-                    self.heading = 'up'
-            if rotation == +90:
-                if self.heading == 'up':
-                    self.heading = 'right'
-                if self.heading == 'left':
-                    self.heading = 'up'
-                if self.heading == 'down':
-                    self.heading = 'left'
-                if self.heading == 'right':
-                    self.heading = 'down'
         # check for 2 way paths
         if sensors[0] > 0 and sensors[1] > 0 and sensors[2] == 0:
             rotation = random.randrange(-90, 0, 90)
-            if rotation == -90:
-                if self.heading == 'up':
-                    self.heading = 'left'
-                if self.heading == 'left':
-                    self.heading = 'down'
-                if self.heading == 'down':
-                    self.heading = 'right'
-                if self.heading == 'right':
-                    self.heading = 'up'
-            if rotation == +90:
-                if self.heading == 'up':
-                    self.heading = 'right'
-                if self.heading == 'left':
-                    self.heading = 'up'
-                if self.heading == 'down':
-                    self.heading = 'left'
-                if self.heading == 'right':
-                    self.heading = 'down'
         if sensors[0] > 0 and sensors[1] == 0 and sensors[2] > 0:
             rotation = random.randrange(-90, 90, 180)
-            if rotation == -90:
-                if self.heading == 'up':
-                    self.heading = 'left'
-                if self.heading == 'left':
-                    self.heading = 'down'
-                if self.heading == 'down':
-                    self.heading = 'right'
-                if self.heading == 'right':
-                    self.heading = 'up'
-            if rotation == +90:
-                if self.heading == 'up':
-                    self.heading = 'right'
-                if self.heading == 'left':
-                    self.heading = 'up'
-                if self.heading == 'down':
-                    self.heading = 'left'
-                if self.heading == 'right':
-                    self.heading = 'down'
         if sensors[0] == 0 and sensors[1] > 0 and sensors[2] > 0:
             rotation = random.randrange(0, 90, 90)
         # check for dead end
         if sensors[0] == 0 and sensors[1] == 0 and sensors[2] == 0:
-            rotation = +90
+            rotation = 90
+
+        print rotation
+
+        # update heading based on rotation
+        if rotation == -90:
+            if self.heading == 'up':
+                self.heading = 'left'
+            elif self.heading == 'left':
+                self.heading = 'down'
+            elif self.heading == 'down':
+                self.heading = 'right'
+            elif self.heading == 'right':
+                self.heading = 'up'
+        if rotation == 90:
             if self.heading == 'up':
                 self.heading = 'right'
-            if self.heading == 'left':
+            elif self.heading == 'left':
                 self.heading = 'up'
-            if self.heading == 'down':
+            elif self.heading == 'down':
                 self.heading = 'left'
-            if self.heading == 'right':
+            elif self.heading == 'right':
                 self.heading = 'down'
         # update location based on heading and movement
         if self.heading == 'up':
