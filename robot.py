@@ -42,6 +42,7 @@ class Robot(object):
         print self.time_step, sensors, self.heading, self.location
         self.time_step += 1
         movement = 1
+
         # check for 1 way paths
         if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0:
             rotation = -90
@@ -49,9 +50,11 @@ class Robot(object):
             rotation = 0
         if sensors[0] == 0 and sensors[1] == 0 and sensors[2] > 0:
             rotation = 90
+
         # check for 3 way paths
         if sensors[0] > 0 and sensors[1] > 0 and sensors[2] > 0:
             rotation =  random.randrange(-90, 90, 90)
+
         # check for 2 way paths
         if sensors[0] > 0 and sensors[1] > 0 and sensors[2] == 0:
             rotation = random.randrange(-90, 0, 90)
@@ -59,11 +62,13 @@ class Robot(object):
             rotation = random.randrange(-90, 90, 180)
         if sensors[0] == 0 and sensors[1] > 0 and sensors[2] > 0:
             rotation = random.randrange(0, 90, 90)
+
         # check for dead end
         if sensors[0] == 0 and sensors[1] == 0 and sensors[2] == 0:
             rotation = 90
+            movement = 0
 
-        print rotation
+        #print rotation
 
         # update heading based on rotation
         if rotation == -90:
@@ -84,16 +89,19 @@ class Robot(object):
                 self.heading = 'left'
             elif self.heading == 'right':
                 self.heading = 'down'
+
         # update location based on heading and movement
         if self.heading == 'up':
             self.location = [self.location[0]-movement, self.location[1]]
-        if self.heading == 'left':
+        elif self.heading == 'left':
             self.location = [self.location[0], self.location[1]-movement]
-        if self.heading == 'down':
+        elif self.heading == 'down':
             self.location = [self.location[0]+movement, self.location[1]]
-        if self.heading == 'right':
+        elif self.heading == 'right':
             self.location = [self.location[0], self.location[1]+movement]
 
+        self.map[self.location[0], self.location[1]] = 1
+        print self.map
 
 
         return rotation, movement
