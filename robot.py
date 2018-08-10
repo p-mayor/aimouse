@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 class Robot(object):
     def __init__(self, maze_dim):
@@ -9,11 +10,12 @@ class Robot(object):
         the robot is placed in.
         '''
 
-        self.location = [0, 0]
+        self.location = [maze_dim-1, 0]
         self.heading = 'up'
         self.maze_dim = maze_dim
         self.map = np.zeros((self.maze_dim, self.maze_dim))
-        self.map[0,0] = 1
+        self.map[maze_dim-1,0] = 1
+        self.time_step = 0
         print self.map
 
     def next_move(self, sensors):
@@ -37,9 +39,117 @@ class Robot(object):
         the maze) then returing the tuple ('Reset', 'Reset') will indicate to
         the tester to end the run and return the robot to the start.
         '''
-        print sensors
+        print self.time_step, sensors, self.heading, self.location
+        self.time_step += 1
+        movement = 1
+        # check for 1 way paths
+        if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0:
+            rotation = -90
+            if self.heading == 'up':
+                self.heading = 'left'
+            if self.heading == 'left':
+                self.heading = 'down'
+            if self.heading == 'down':
+                self.heading = 'right'
+            if self.heading == 'right':
+                self.heading = 'up'
+        if sensors[0] == 0 and sensors[1] > 0 and sensors[2] == 0:
+            rotation = 0
+        if sensors[0] == 0 and sensors[1] == 0 and sensors[2] > 0:
+            rotation = +90
+            if self.heading == 'up':
+                self.heading = 'right'
+            if self.heading == 'left':
+                self.heading = 'up'
+            if self.heading == 'down':
+                self.heading = 'left'
+            if self.heading == 'right':
+                self.heading = 'down'
+        # check for 3 way paths
+        if sensors[0] > 0 and sensors[1] > 0 and sensors[2] > 0:
+            rotation =  random.randrange(-90, 90, 90)
+            if rotation == -90:
+                if self.heading == 'up':
+                    self.heading = 'left'
+                if self.heading == 'left':
+                    self.heading = 'down'
+                if self.heading == 'down':
+                    self.heading = 'right'
+                if self.heading == 'right':
+                    self.heading = 'up'
+            if rotation == +90:
+                if self.heading == 'up':
+                    self.heading = 'right'
+                if self.heading == 'left':
+                    self.heading = 'up'
+                if self.heading == 'down':
+                    self.heading = 'left'
+                if self.heading == 'right':
+                    self.heading = 'down'
+        # check for 2 way paths
+        if sensors[0] > 0 and sensors[1] > 0 and sensors[2] == 0:
+            rotation = random.randrange(-90, 0, 90)
+            if rotation == -90:
+                if self.heading == 'up':
+                    self.heading = 'left'
+                if self.heading == 'left':
+                    self.heading = 'down'
+                if self.heading == 'down':
+                    self.heading = 'right'
+                if self.heading == 'right':
+                    self.heading = 'up'
+            if rotation == +90:
+                if self.heading == 'up':
+                    self.heading = 'right'
+                if self.heading == 'left':
+                    self.heading = 'up'
+                if self.heading == 'down':
+                    self.heading = 'left'
+                if self.heading == 'right':
+                    self.heading = 'down'
+        if sensors[0] > 0 and sensors[1] == 0 and sensors[2] > 0:
+            rotation = random.randrange(-90, 90, 180)
+            if rotation == -90:
+                if self.heading == 'up':
+                    self.heading = 'left'
+                if self.heading == 'left':
+                    self.heading = 'down'
+                if self.heading == 'down':
+                    self.heading = 'right'
+                if self.heading == 'right':
+                    self.heading = 'up'
+            if rotation == +90:
+                if self.heading == 'up':
+                    self.heading = 'right'
+                if self.heading == 'left':
+                    self.heading = 'up'
+                if self.heading == 'down':
+                    self.heading = 'left'
+                if self.heading == 'right':
+                    self.heading = 'down'
+        if sensors[0] == 0 and sensors[1] > 0 and sensors[2] > 0:
+            rotation = random.randrange(0, 90, 90)
+        # check for dead end
+        if sensors[0] == 0 and sensors[1] == 0 and sensors[2] == 0:
+            rotation = +90
+            if self.heading == 'up':
+                self.heading = 'right'
+            if self.heading == 'left':
+                self.heading = 'up'
+            if self.heading == 'down':
+                self.heading = 'left'
+            if self.heading == 'right':
+                self.heading = 'down'
+        # update location based on heading and movement
+        if self.heading == 'up':
+            self.location = [self.location[0]-movement, self.location[1]]
+        if self.heading == 'left':
+            self.location = [self.location[0], self.location[1]-movement]
+        if self.heading == 'down':
+            self.location = [self.location[0]+movement, self.location[1]]
+        if self.heading == 'right':
+            self.location = [self.location[0], self.location[1]+movement]
 
-        rotation = 0
-        movement = 0
+
 
         return rotation, movement
