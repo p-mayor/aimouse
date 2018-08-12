@@ -20,28 +20,29 @@ class Robot(object):
 
     def next_move(self, sensors):
         '''
-        Use this function to determine the next move the robot should make,
-        based on the input from the sensors after its previous move. Sensor
-        inputs are a list of three distances from the robot's left, front, and
-        right-facing sensors, in that order.
+            Use this function to determine the next move the robot should make,
+            based on the input from the sensors after its previous move. Sensor
+            inputs are a list of three distances from the robot's left, front, and
+            right-facing sensors, in that order.
 
-        Outputs should be a tuple of two values. The first value indicates
-        robot rotation (if any), as a number: 0 for no rotation, +90 for a
-        90-degree rotation clockwise, and -90 for a 90-degree rotation
-        counterclockwise. Other values will result in no rotation. The second
-        value indicates robot movement, and the robot will attempt to move the
-        number of indicated squares: a positive number indicates forwards
-        movement, while a negative number indicates backwards movement. The
-        robot may move a maximum of three units per turn. Any excess movement
-        is ignored.
+            Outputs should be a tuple of two values. The first value indicates
+            robot rotation (if any), as a number: 0 for no rotation, +90 for a
+            90-degree rotation clockwise, and -90 for a 90-degree rotation
+            counterclockwise. Other values will result in no rotation. The second
+            value indicates robot movement, and the robot will attempt to move the
+            number of indicated squares: a positive number indicates forwards
+            movement, while a negative number indicates backwards movement. The
+            robot may move a maximum of three units per turn. Any excess movement
+            is ignored.
 
-        If the robot wants to end a run (e.g. during the first training run in
-        the maze) then returing the tuple ('Reset', 'Reset') will indicate to
-        the tester to end the run and return the robot to the start.
+            If the robot wants to end a run (e.g. during the first training run in
+            the maze) then returing the tuple ('Reset', 'Reset') will indicate to
+            the tester to end the run and return the robot to the start.
         '''
         # printouts for testing
-        print self.time_step, sensors, self.heading, self.location
+        print self.time_step, sensors, self.heading, self.location, self.map
 
+        # time_step update
         self.time_step += 1
         movement = 1
 
@@ -90,7 +91,7 @@ class Robot(object):
                 self.heading = 'right'
             elif self.heading == 'right':
                 self.heading = 'up'
-        if rotation == 90:
+        elif rotation == 90:
             if self.heading == 'up':
                 self.heading = 'right'
             elif self.heading == 'left':
@@ -110,12 +111,16 @@ class Robot(object):
         elif self.heading == 'right':
             self.location = [self.location[0], self.location[1]+movement]
 
-        self.map[self.location[0], self.location[1]] = 1
+        # update map with explored_space_value
+        explored_space_value = 1
+        self.map[self.location[0], self.location[1]] = explored_space_value
+
+        # check for goal area (middle 2x2 square of maze) and set to goal_space_value
+        goal_space_value = 2
         if (self.maze_dim/2)-1 <= self.location[0] and self.location[0] <= (self.maze_dim/2):
             if (self.maze_dim/2)-1 <= self.location[1] and self.location[1] <= (self.maze_dim/2):
-                self.map[self.location[0], self.location[1]] = 2
+                self.map[self.location[0], self.location[1]] = goal_space_value
 
-        print self.map
 
 
         return rotation, movement
