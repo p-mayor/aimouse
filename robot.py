@@ -54,24 +54,24 @@ class Robot(object):
             rotation = 90
 
 
-        # check for 3 way paths
+        # check for 3 way paths and choose random rotation
         if sensors[0] > 0 and sensors[1] > 0 and sensors[2] > 0:
             rotation =  random.randrange(-90, 90, 90)
 
-        # check for 2 way paths
-        if sensors[0] > 0 and sensors[1] > 0 and sensors[2] == 0:
+        # check for 2 way paths and choose random rotation between the 2
+        if sensors[0] > 0 and sensors[1] > 0 and sensors[2] == 0: # wall on right
             rotation = random.randrange(-90, 0, 90)
-        if sensors[0] > 0 and sensors[1] == 0 and sensors[2] > 0:
+        if sensors[0] > 0 and sensors[1] == 0 and sensors[2] > 0: # wall on front
             rotation = random.randrange(-90, 90, 180)
-        if sensors[0] == 0 and sensors[1] > 0 and sensors[2] > 0:
+        if sensors[0] == 0 and sensors[1] > 0 and sensors[2] > 0: # wall on left
             rotation = random.randrange(0, 90, 90)
 
-        # check for dead end and turn 90
+        # check for dead end and rotate +90
         if sensors[0] == 0 and sensors[1] == 0 and sensors[2] == 0:
             rotation = 90
             movement = 0
 
-        # movement based on min between sensor and 3 (max move per step)
+        # base move on min between sensor and 3 (max move per step)
         #if rotation == -90:
         #    movement = min(3, sensors[0])
         #elif rotation == 0:
