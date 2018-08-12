@@ -117,8 +117,8 @@ class Robot(object):
         if (self.maze_dim/2)-1 <= self.location[0] and self.location[0] <= (self.maze_dim/2):
             if (self.maze_dim/2)-1 <= self.location[1] and self.location[1] <= (self.maze_dim/2):
                 self.map[self.location[0], self.location[1]] = goal_space_value
-        # + 4 from goal spaces
 
+        # exploration percentage
         max_map_value = self.maze_dim * self.maze_dim + (goal_space_value*4)-4
         current_map_value = np.sum(self.map)
         exploration = (current_map_value / max_map_value)*100
