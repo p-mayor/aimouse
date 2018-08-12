@@ -39,9 +39,6 @@ class Robot(object):
             the maze) then returing the tuple ('Reset', 'Reset') will indicate to
             the tester to end the run and return the robot to the start.
         '''
-        # printouts for testing
-        print self.time_step, sensors, self.heading, self.location, self.map
-
         # time_step update
         self.time_step += 1
         movement = 1
@@ -120,7 +117,13 @@ class Robot(object):
         if (self.maze_dim/2)-1 <= self.location[0] and self.location[0] <= (self.maze_dim/2):
             if (self.maze_dim/2)-1 <= self.location[1] and self.location[1] <= (self.maze_dim/2):
                 self.map[self.location[0], self.location[1]] = goal_space_value
+        # + 4 from goal spaces
 
+        max_map_value = self.maze_dim * self.maze_dim + (goal_space_value*4)-4
+        current_map_value = np.sum(self.map)
+        exploration = (current_map_value / max_map_value)*100
 
+        # printouts for testing
+        print self.time_step, sensors, self.heading, self.location, self.map, exploration
 
         return rotation, movement
