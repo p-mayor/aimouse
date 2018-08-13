@@ -60,7 +60,7 @@ class Robot(object):
         rand_right_straight = random.randrange(0, 90, 90)
         rand_rotation = random.randrange(-90, 90, 90)
 
-        # check sensors after move
+        # check sensors after move and update bits for wall map
         if self.movement == 1:
             if self.heading == 'up':
                 if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0: # open left only
@@ -194,7 +194,7 @@ class Robot(object):
                     rotation = 90
                     self.movement = 0
 
-        # check sensors after dead end and 90 rotation
+        # check sensors after dead end and 90 rotation and update bits
         elif self.movement == 0:
             self.movement = 1
             if self.heading == 'up':
@@ -298,9 +298,6 @@ class Robot(object):
         elif self.heading == 'right':
             self.location = [self.location[0], self.location[1]+self.movement]
 
-
-
-
         # update map at new location as current_space_value
         self.map[self.location[0], self.location[1]] = current_space_value
 
@@ -309,7 +306,7 @@ class Robot(object):
         current_map_value = np.sum(self.map)
         exploration = (current_map_value / max_map_value)
 
-
+        # plotting exploration %
         explo_list.append(exploration)
         if self.time_step == 999:
             plt.plot(explo_list)
