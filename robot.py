@@ -47,8 +47,6 @@ class Robot(object):
             the maze) then returing the tuple ('Reset', 'Reset') will indicate to
             the tester to end the run and return the robot to the start.
         '''
-        # time_step update
-        self.time_step += 1
         movement = 1
 
         # random rotation variables
@@ -56,6 +54,10 @@ class Robot(object):
         rand_left_right = random.randrange(-90, 90, 180)
         rand_right_straight = random.randrange(0, 90, 90)
         rand_rotation = random.randrange(-90, 90, 90)
+
+        # update new location with map_walls bits
+        self.map_walls[self.location[0], self.location[1]] = (self.top_bit*1 + \
+            self.right_bit*2 + self.bot_bit*4 + self.left_bit*8)
 
         # check sensors after move
         if movement == 1:
@@ -351,10 +353,6 @@ class Robot(object):
         elif self.heading == 'right':
             self.location = [self.location[0], self.location[1]+movement]
 
-        # update new location with map_walls bits
-        self.map_walls[self.location[0], self.location[1]] = (self.top_bit*1 + \
-            self.right_bit*2 + self.bot_bit*4 + self.left_bit*8)
-
         # update map at new location as current_space_value
         self.map[self.location[0], self.location[1]] = current_space_value
 
@@ -374,5 +372,8 @@ class Robot(object):
             'Heading: ' + str(self.heading), 'Location: ' + str(self.location),\
             'Exploration: ' + '{:2.2%}'.format(exploration), '\n', self.map, '\n', self.map_walls,\
             self.top_bit, self.right_bit, self.bot_bit, self.left_bit
+
+        # time_step update
+        self.time_step += 1
 
         return rotation, movement
