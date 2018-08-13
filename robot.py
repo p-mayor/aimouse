@@ -16,7 +16,6 @@ class Robot(object):
         self.map = np.zeros((self.maze_dim, self.maze_dim))
         self.map[maze_dim-1,0] = 1
         self.time_step = 0
-        print self.map
 
     def next_move(self, sensors):
         '''
@@ -43,7 +42,13 @@ class Robot(object):
         self.time_step += 1
         movement = 1
 
-        # check for 1 way paths
+        # random rotation variables
+        rand_left_straight = random.randrange(-90, 0, 90)
+        rand_left_right = random.randrange(-90, 90, 180)
+        rand_right_straight = random.randrange(0, 90, 90)
+        rand_rotation = random.randrange(-90, 90, 90)
+
+        # check for 1 way paths and rotate to open path
         if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0:
             rotation = -90
         elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] == 0:
@@ -53,15 +58,15 @@ class Robot(object):
 
         # check for 2 way paths and choose random rotation between the 2
         elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] == 0: # wall on right
-            rotation = random.randrange(-90, 0, 90)
+            rotation = rand_left_straight
         elif sensors[0] > 0 and sensors[1] == 0 and sensors[2] > 0: # wall on front
-            rotation = random.randrange(-90, 90, 180)
+            rotation = rand_left_right
         elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] > 0: # wall on left
-            rotation = random.randrange(0, 90, 90)
+            rotation = rand_right_straight
 
         # check for 3 way paths and choose random rotation
         elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] > 0:
-            rotation =  random.randrange(-90, 90, 90)
+            rotation =  rand_rotation
 
         # check for dead end and rotate +90
         else:
@@ -97,6 +102,11 @@ class Robot(object):
             elif self.heading == 'right':
                 self.heading = 'down'
 
+        # update map at current location as explored_space_value
+        if self.map[self.location[0], self.location[1]] != 2:
+            explored_space_value = 1
+            self.map[self.location[0], self.location[1]] = explored_space_value
+
         # update location based on heading and movement
         if self.heading == 'up':
             self.location = [self.location[0]-movement, self.location[1]]
@@ -107,9 +117,9 @@ class Robot(object):
         elif self.heading == 'right':
             self.location = [self.location[0], self.location[1]+movement]
 
-        # update map with explored_space_value
-        explored_space_value = 1
-        self.map[self.location[0], self.location[1]] = explored_space_value
+        # update map at new location as current_space_value
+        current_space_value = 3
+        self.map[self.location[0], self.location[1]] = current_space_value
 
         # check for goal area (middle 2x2 square of maze) and set to goal_space_value
         goal_space_value = 2
@@ -118,11 +128,13 @@ class Robot(object):
                 self.map[self.location[0], self.location[1]] = goal_space_value
 
         # exploration percentage
-        max_map_value = self.maze_dim * self.maze_dim + (goal_space_value*4)-4
+        max_map_value = self.maze_dim * self.maze_dim + (goal_space_value*4)-4 + (current_space_value-2)
         current_map_value = np.sum(self.map)
-        exploration = (current_map_value / max_map_value)*100
+        exploration = (current_map_value / max_map_value)
 
         # printouts for testing
-        print self.time_step, sensors, self.heading, self.location, self.map, exploration
+        print 'Time Step: ' + str(self.time_step), 'Sensors: ' + str(sensors),\
+            'Heading: ' + str(self.heading), 'Location: ' + str(self.location),\
+            'Exploration: ' + '{:2.2%}'.format(exploration), '\n', self.map
 
         return rotation, movement
