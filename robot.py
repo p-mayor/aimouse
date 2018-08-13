@@ -15,7 +15,16 @@ class Robot(object):
         self.maze_dim = maze_dim
         self.map = np.zeros((self.maze_dim, self.maze_dim))
         self.map[maze_dim-1,0] = 1
+        self.map_walls = np.zeros((self.maze_dim, self.maze_dim))
+        self.map_walls[maze_dim-1,0] = 1
         self.time_step = 0
+
+        # bits for mapping walls (start is always 1)
+        self.top_bit = 1
+        self.right_bit = 0
+        self.bot_bit = 0
+        self.left_bit = 0
+
 
     def next_move(self, sensors):
         '''
@@ -48,30 +57,251 @@ class Robot(object):
         rand_right_straight = random.randrange(0, 90, 90)
         rand_rotation = random.randrange(-90, 90, 90)
 
-        # check for 1 way paths and rotate to open path
-        if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0:
-            rotation = -90
-        elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] == 0:
-            rotation = 0
-        elif sensors[0] == 0 and sensors[1] == 0 and sensors[2] > 0:
-            rotation = 90
+        # check sensors after move
+        if movement == 1:
+            if self.heading == 'up':
+                if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0: # open left only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 1, 1
+                    rotation = -90
+                elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] == 0: # open front only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 1, 0
+                    rotation = 0
+                elif sensors[0] == 0 and sensors[1] == 0 and sensors[2] > 0: # open right only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 1, 0
+                    rotation = 90
 
-        # check for 2 way paths and choose random rotation between the 2
-        elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] == 0: # wall on right
-            rotation = rand_left_straight
-        elif sensors[0] > 0 and sensors[1] == 0 and sensors[2] > 0: # wall on front
-            rotation = rand_left_right
-        elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] > 0: # wall on left
-            rotation = rand_right_straight
+                # check for 2 way paths and choose random rotation between the 2
+                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] == 0: # wall on right
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 1, 1
+                    rotation = rand_left_straight
+                elif sensors[0] > 0 and sensors[1] == 0 and sensors[2] > 0: # wall on front
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 1, 1
+                    rotation = rand_left_right
+                elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] > 0: # wall on left
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 1, 0
+                    rotation = rand_right_straight
 
-        # check for 3 way paths and choose random rotation
-        elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] > 0:
-            rotation =  rand_rotation
+                # check for 3 way paths and choose random rotation
+                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] > 0:
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 1, 1
+                    rotation = rand_rotation
 
-        # check for dead end and rotate +90
-        else:
-            rotation = 90
-            movement = 0
+                # check for dead end and rotate +90
+                else:
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 1, 0
+                    rotation = 90
+                    movement = 0
+
+            elif self.heading == 'right':
+                if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0: # open left only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 0, 1
+                    rotation = -90
+                elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] == 0: # open front only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 0, 1
+                    rotation = 0
+                elif sensors[0] == 0 and sensors[1] == 0 and sensors[2] > 0: # open right only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 1, 1
+                    rotation = 90
+
+                # check for 2 way paths and choose random rotation between the 2
+                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] == 0: # wall on right
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 0, 1
+                    rotation = rand_left_straight
+                elif sensors[0] > 0 and sensors[1] == 0 and sensors[2] > 0: # wall on front
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 1, 1
+                    rotation = rand_left_right
+                elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] > 0: # wall on left
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 1, 1
+                    rotation = rand_right_straight
+
+                # check for 3 way paths and choose random rotation
+                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] > 0:
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 1, 1
+                    rotation = rand_rotation
+
+                # check for dead end and rotate +90
+                else:
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 0, 1
+                    rotation = 90
+                    movement = 0
+
+            elif self.heading == 'down':
+                if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0: # open left only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 0, 1
+                    rotation = -90
+                elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] == 0: # open front only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 1, 0
+                    rotation = 0
+                elif sensors[0] == 0 and sensors[1] == 0 and sensors[2] > 0: # open right only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 0, 1
+                    rotation = 90
+
+                # check for 2 way paths and choose random rotation between the 2
+                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] == 0: # wall on right
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 1, 0
+                    rotation = rand_left_straight
+                elif sensors[0] > 0 and sensors[1] == 0 and sensors[2] > 0: # wall on front
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 0, 1
+                    rotation = rand_left_right
+                elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] > 0: # wall on left
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 1, 1
+                    rotation = rand_right_straight
+
+                # check for 3 way paths and choose random rotation
+                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] > 0:
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 1, 1
+                    rotation = rand_rotation
+
+                # check for dead end and rotate +90
+                else:
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 0, 0
+                    rotation = 90
+                    movement = 0
+
+            elif self.heading == 'left':
+                if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0: # open left only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 1, 0
+                    rotation = -90
+                elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] == 0: # open front only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 0, 1
+                    rotation = 0
+                elif sensors[0] == 0 and sensors[1] == 0 and sensors[2] > 0: # open right only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 0, 0
+                    rotation = 90
+
+                # check for 2 way paths and choose random rotation between the 2
+                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] == 0: # wall on right
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 1, 1
+                    rotation = rand_left_straight
+                elif sensors[0] > 0 and sensors[1] == 0 and sensors[2] > 0: # wall on front
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 1, 0
+                    rotation = rand_left_right
+                elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] > 0: # wall on left
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 0, 1
+                    rotation = rand_right_straight
+
+                # check for 3 way paths and choose random rotation
+                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] > 0:
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 1, 1
+                    rotation = rand_rotation
+
+                # check for dead end and rotate +90
+                else:
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 0, 0
+                    rotation = 90
+                    movement = 0
+
+        # check sensors after dead end and rand rotation
+        elif movement == 0:
+            movement = 1
+            if self.heading == 'up':
+                if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0: # open left only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 0, 1
+                    rotation = -90
+                elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] == 0: # open front only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 0, 0
+                    rotation = 0
+                elif sensors[0] == 0 and sensors[1] == 0 and sensors[2] > 0: # open right only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 0, 0
+                    rotation = 90
+
+                # check for 2 way paths and choose random rotation between the 2
+                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] == 0: # wall on right
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 0, 1
+                    rotation = rand_left_straight
+                elif sensors[0] > 0 and sensors[1] == 0 and sensors[2] > 0: # wall on front
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 0, 1
+                    rotation = rand_left_right
+                elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] > 0: # wall on left
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 0, 0
+                    rotation = rand_right_straight
+
+                # check for 3 way paths and choose random rotation
+                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] > 0:
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 0, 1
+                    rotation =  rand_rotation
+
+            elif self.heading == 'right':
+                if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0: # open left only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 0, 0
+                    rotation = -90
+                elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] == 0: # open front only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 0, 0
+                    rotation = 0
+                elif sensors[0] == 0 and sensors[1] == 0 and sensors[2] > 0: # open right only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 1, 0
+                    rotation = 90
+
+                # check for 2 way paths and choose random rotation between the 2
+                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] == 0: # wall on right
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 0, 0
+                    rotation = rand_left_straight
+                elif sensors[0] > 0 and sensors[1] == 0 and sensors[2] > 0: # wall on front
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 1, 0
+                    rotation = rand_left_right
+                elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] > 0: # wall on left
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 1, 0
+                    rotation = rand_right_straight
+
+                # check for 3 way paths and choose random rotation
+                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] > 0:
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 1, 0
+                    rotation =  rand_rotation
+
+            elif self.heading == 'down':
+                if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0: # open left only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 0, 1
+                    rotation = -90
+                elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] == 0: # open front only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 1, 0
+                    rotation = 0
+                elif sensors[0] == 0 and sensors[1] == 0 and sensors[2] > 0: # open right only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 0, 1
+                    rotation = 90
+
+
+                # check for 2 way paths and choose random rotation between the 2
+                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] == 0: # wall on right
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 1, 0
+                    rotation = rand_left_straight
+                elif sensors[0] > 0 and sensors[1] == 0 and sensors[2] > 0: # wall on front
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 0, 1
+                    rotation = rand_left_right
+                elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] > 0: # wall on left
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 1, 1
+                    rotation = rand_right_straight
+
+                # check for 3 way paths and choose random rotation
+                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] > 0:
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 1, 1
+                    rotation =  rand_rotation
+
+            elif self.heading == 'left':
+                if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0: # open left only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 1, 0
+                    rotation = -90
+                elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] == 0: # open front only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 0, 1
+                    rotation = 0
+                elif sensors[0] == 0 and sensors[1] == 0 and sensors[2] > 0: # open right only
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 0, 0
+                    rotation = 90
+
+                # check for 2 way paths and choose random rotation between the 2
+                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] == 0: # wall on right
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 1, 1
+                    rotation = rand_left_straight
+                elif sensors[0] > 0 and sensors[1] == 0 and sensors[2] > 0: # wall on front
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 1, 0
+                    rotation = rand_left_right
+                elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] > 0: # wall on left
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 0, 1
+                    rotation = rand_right_straight
+
+                # check for 3 way paths and choose random rotation
+                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] > 0:
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 1, 1
+                    rotation =  rand_rotation
 
         # base move on min between sensor and 3 (max move per step)
         #if rotation == -90:
@@ -102,9 +332,13 @@ class Robot(object):
             elif self.heading == 'right':
                 self.heading = 'down'
 
+        # exploration map values
+        explored_space_value = 1
+        current_space_value = 3
+        goal_space_value = 2
+
         # update map at current location as explored_space_value if not goal
         if self.map[self.location[0], self.location[1]] != 2:
-            explored_space_value = 1
             self.map[self.location[0], self.location[1]] = explored_space_value
 
         # update location based on heading and movement
@@ -117,12 +351,15 @@ class Robot(object):
         elif self.heading == 'right':
             self.location = [self.location[0], self.location[1]+movement]
 
+        # update new location with map_walls bits
+        self.map_walls[self.location[0], self.location[1]] = (self.top_bit*1 + \
+            self.right_bit*2 + self.bot_bit*4 + self.left_bit*8)
+
         # update map at new location as current_space_value
-        current_space_value = 3
         self.map[self.location[0], self.location[1]] = current_space_value
 
         # check for goal area (middle 2x2 square of maze) and set to goal_space_value
-        goal_space_value = 2
+
         if (self.maze_dim/2)-1 <= self.location[0] and self.location[0] <= (self.maze_dim/2):
             if (self.maze_dim/2)-1 <= self.location[1] and self.location[1] <= (self.maze_dim/2):
                 self.map[self.location[0], self.location[1]] = goal_space_value
@@ -135,6 +372,7 @@ class Robot(object):
         # printouts for testing
         print 'Time Step: ' + str(self.time_step), 'Sensors: ' + str(sensors),\
             'Heading: ' + str(self.heading), 'Location: ' + str(self.location),\
-            'Exploration: ' + '{:2.2%}'.format(exploration), '\n', self.map
+            'Exploration: ' + '{:2.2%}'.format(exploration), '\n', self.map, '\n', self.map_walls,\
+            self.top_bit, self.right_bit, self.bot_bit, self.left_bit
 
         return rotation, movement
