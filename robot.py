@@ -24,6 +24,7 @@ class Robot(object):
         self.right_bit = 0
         self.bot_bit = 0
         self.left_bit = 0
+        self.movement = 1
 
 
     def next_move(self, sensors):
@@ -37,17 +38,16 @@ class Robot(object):
             robot rotation (if any), as a number: 0 for no rotation, +90 for a
             90-degree rotation clockwise, and -90 for a 90-degree rotation
             counterclockwise. Other values will result in no rotation. The second
-            value indicates robot movement, and the robot will attempt to move the
+            value indicates robot self.movement, and the robot will attempt to move the
             number of indicated squares: a positive number indicates forwards
-            movement, while a negative number indicates backwards movement. The
-            robot may move a maximum of three units per turn. Any excess movement
+            self.movement, while a negative number indicates backwards self.movement. The
+            robot may move a maximum of three units per turn. Any excess self.movement
             is ignored.
 
             If the robot wants to end a run (e.g. during the first training run in
             the maze) then returing the tuple ('Reset', 'Reset') will indicate to
             the tester to end the run and return the robot to the start.
         '''
-        movement = 1
 
         # random rotation variables
         rand_left_straight = random.randrange(-90, 0, 90)
@@ -55,12 +55,8 @@ class Robot(object):
         rand_right_straight = random.randrange(0, 90, 90)
         rand_rotation = random.randrange(-90, 90, 90)
 
-        # update new location with map_walls bits
-        self.map_walls[self.location[0], self.location[1]] = (self.top_bit*1 + \
-            self.right_bit*2 + self.bot_bit*4 + self.left_bit*8)
-
         # check sensors after move
-        if movement == 1:
+        if self.movement == 1:
             if self.heading == 'up':
                 if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0: # open left only
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 1, 1
@@ -92,7 +88,7 @@ class Robot(object):
                 else:
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 1, 0
                     rotation = 90
-                    movement = 0
+                    self.movement = 0
 
             elif self.heading == 'right':
                 if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0: # open left only
@@ -125,7 +121,7 @@ class Robot(object):
                 else:
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 0, 1
                     rotation = 90
-                    movement = 0
+                    self.movement = 0
 
             elif self.heading == 'down':
                 if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0: # open left only
@@ -158,7 +154,7 @@ class Robot(object):
                 else:
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 0, 0
                     rotation = 90
-                    movement = 0
+                    self.movement = 0
 
             elif self.heading == 'left':
                 if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0: # open left only
@@ -191,11 +187,11 @@ class Robot(object):
                 else:
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 0, 0
                     rotation = 90
-                    movement = 0
+                    self.movement = 0
 
         # check sensors after dead end and 90 rotation
-        elif movement == 0:
-            movement = 1
+        elif self.movement == 0:
+            self.movement = 1
             if self.heading == 'up':
                 if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0: # open left only
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 0, 1
@@ -240,13 +236,18 @@ class Robot(object):
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 0, 0
                     rotation = 90
 
+        # update new location with map_walls bits if not time 0
+        if self.time_step != 0:
+            self.map_walls[self.location[0], self.location[1]] = (self.top_bit*1 + \
+                self.right_bit*2 + self.bot_bit*4 + self.left_bit*8)
+
         # base move on min between sensor and 3 (max move per step)
         #if rotation == -90:
-        #    movement = min(3, sensors[0])
+        #    self.movement = min(3, sensors[0])
         #elif rotation == 0:
-        #    movement = min(3, sensors[1])
+        #    self.movement = min(3, sensors[1])
         #elif rotation == 90:
-        #    movement = min(3, sensors[2])
+        #    self.movement = min(3, sensors[2])
         #print rotation
 
         # update heading based on rotation
@@ -278,15 +279,15 @@ class Robot(object):
         if self.map[self.location[0], self.location[1]] != 2:
             self.map[self.location[0], self.location[1]] = explored_space_value
 
-        # update location based on heading and movement
+        # update location based on heading and self.movement
         if self.heading == 'up':
-            self.location = [self.location[0]-movement, self.location[1]]
+            self.location = [self.location[0]-self.movement, self.location[1]]
         elif self.heading == 'left':
-            self.location = [self.location[0], self.location[1]-movement]
+            self.location = [self.location[0], self.location[1]-self.movement]
         elif self.heading == 'down':
-            self.location = [self.location[0]+movement, self.location[1]]
+            self.location = [self.location[0]+self.movement, self.location[1]]
         elif self.heading == 'right':
-            self.location = [self.location[0], self.location[1]+movement]
+            self.location = [self.location[0], self.location[1]+self.movement]
 
         # update map at new location as current_space_value
         self.map[self.location[0], self.location[1]] = current_space_value
@@ -311,4 +312,4 @@ class Robot(object):
         # time_step update
         self.time_step += 1
 
-        return rotation, movement
+        return rotation, self.movement
