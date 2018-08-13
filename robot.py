@@ -193,7 +193,7 @@ class Robot(object):
                     rotation = 90
                     movement = 0
 
-        # check sensors after dead end and rand rotation
+        # check sensors after dead end and 90 rotation
         elif movement == 0:
             movement = 1
             if self.heading == 'up':
@@ -207,22 +207,6 @@ class Robot(object):
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 0, 0
                     rotation = 90
 
-                # check for 2 way paths and choose random rotation between the 2
-                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] == 0: # wall on right
-                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 0, 1
-                    rotation = rand_left_straight
-                elif sensors[0] > 0 and sensors[1] == 0 and sensors[2] > 0: # wall on front
-                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 0, 1
-                    rotation = rand_left_right
-                elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] > 0: # wall on left
-                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 0, 0
-                    rotation = rand_right_straight
-
-                # check for 3 way paths and choose random rotation
-                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] > 0:
-                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 0, 1
-                    rotation =  rand_rotation
-
             elif self.heading == 'right':
                 if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0: # open left only
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 0, 0
@@ -233,22 +217,6 @@ class Robot(object):
                 elif sensors[0] == 0 and sensors[1] == 0 and sensors[2] > 0: # open right only
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 1, 0
                     rotation = 90
-
-                # check for 2 way paths and choose random rotation between the 2
-                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] == 0: # wall on right
-                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 0, 0
-                    rotation = rand_left_straight
-                elif sensors[0] > 0 and sensors[1] == 0 and sensors[2] > 0: # wall on front
-                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 1, 0
-                    rotation = rand_left_right
-                elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] > 0: # wall on left
-                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 1, 0
-                    rotation = rand_right_straight
-
-                # check for 3 way paths and choose random rotation
-                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] > 0:
-                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 1, 0
-                    rotation =  rand_rotation
 
             elif self.heading == 'down':
                 if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0: # open left only
@@ -261,23 +229,6 @@ class Robot(object):
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 0, 1
                     rotation = 90
 
-
-                # check for 2 way paths and choose random rotation between the 2
-                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] == 0: # wall on right
-                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 1, 0
-                    rotation = rand_left_straight
-                elif sensors[0] > 0 and sensors[1] == 0 and sensors[2] > 0: # wall on front
-                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 0, 1
-                    rotation = rand_left_right
-                elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] > 0: # wall on left
-                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 1, 1
-                    rotation = rand_right_straight
-
-                # check for 3 way paths and choose random rotation
-                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] > 0:
-                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 1, 1
-                    rotation =  rand_rotation
-
             elif self.heading == 'left':
                 if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0: # open left only
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 1, 0
@@ -288,22 +239,6 @@ class Robot(object):
                 elif sensors[0] == 0 and sensors[1] == 0 and sensors[2] > 0: # open right only
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 0, 0
                     rotation = 90
-
-                # check for 2 way paths and choose random rotation between the 2
-                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] == 0: # wall on right
-                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 1, 1
-                    rotation = rand_left_straight
-                elif sensors[0] > 0 and sensors[1] == 0 and sensors[2] > 0: # wall on front
-                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 1, 0
-                    rotation = rand_left_right
-                elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] > 0: # wall on left
-                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 0, 1
-                    rotation = rand_right_straight
-
-                # check for 3 way paths and choose random rotation
-                elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] > 0:
-                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 1, 1
-                    rotation =  rand_rotation
 
         # base move on min between sensor and 3 (max move per step)
         #if rotation == -90:
