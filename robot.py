@@ -1,5 +1,8 @@
 import numpy as np
 import random
+import matplotlib.pyplot as plt
+
+explo_list = []
 
 class Robot(object):
     def __init__(self, maze_dim):
@@ -280,6 +283,10 @@ class Robot(object):
         # update map at current location as explored_space_value if not goal
         if self.map[self.location[0], self.location[1]] != 2:
             self.map[self.location[0], self.location[1]] = explored_space_value
+            # check for goal area (middle 2x2 square of maze) and set to goal_space_value
+            if (self.maze_dim/2)-1 <= self.location[0] and self.location[0] <= (self.maze_dim/2):
+                if (self.maze_dim/2)-1 <= self.location[1] and self.location[1] <= (self.maze_dim/2):
+                    self.map[self.location[0], self.location[1]] = goal_space_value
 
         # update location based on heading and self.movement
         if self.heading == 'up':
@@ -291,19 +298,22 @@ class Robot(object):
         elif self.heading == 'right':
             self.location = [self.location[0], self.location[1]+self.movement]
 
+
+
+
         # update map at new location as current_space_value
         self.map[self.location[0], self.location[1]] = current_space_value
-
-        # check for goal area (middle 2x2 square of maze) and set to goal_space_value
-
-        if (self.maze_dim/2)-1 <= self.location[0] and self.location[0] <= (self.maze_dim/2):
-            if (self.maze_dim/2)-1 <= self.location[1] and self.location[1] <= (self.maze_dim/2):
-                self.map[self.location[0], self.location[1]] = goal_space_value
 
         # exploration percentage
         max_map_value = self.maze_dim * self.maze_dim + (goal_space_value*4)-4 + (current_space_value-2)
         current_map_value = np.sum(self.map)
         exploration = (current_map_value / max_map_value)
+
+
+        explo_list.append(exploration)
+        if self.time_step == 999:
+            plt.plot(explo_list)
+            plt.show()
 
         # printouts for testing
         print 'Time Step: ' + str(self.time_step), 'Sensors: ' + str(sensors),\
