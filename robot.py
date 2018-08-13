@@ -20,6 +20,8 @@ class Robot(object):
         self.map[maze_dim-1,0] = 1
         self.map_walls = np.zeros((self.maze_dim, self.maze_dim))
         self.map_walls[maze_dim-1,0] = 1
+        self.map_count = np.zeros((self.maze_dim, self.maze_dim))
+        self.map_count[maze_dim-1,0] = 1
         self.time_step = 0
 
         # bits for mapping walls (start is always 1)
@@ -84,7 +86,7 @@ class Robot(object):
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 1, 0
                     rotation = rand_right_straight
 
-                # check for 3 way paths and choose random rotation
+                # check for 3 way paths and choose least count or random if equal
                 elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] > 0:
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 1, 1
                     rotation = rand_rotation
@@ -287,6 +289,8 @@ class Robot(object):
             if (self.maze_dim/2)-1 <= self.location[0] and self.location[0] <= (self.maze_dim/2):
                 if (self.maze_dim/2)-1 <= self.location[1] and self.location[1] <= (self.maze_dim/2):
                     self.map[self.location[0], self.location[1]] = goal_space_value
+        # update counter map
+        self.map_count[self.location[0], self.location[1]] += 1
 
         # update location based on heading and self.movement
         if self.heading == 'up':
@@ -316,7 +320,7 @@ class Robot(object):
         print 'Time Step: ' + str(self.time_step), 'Sensors: ' + str(sensors),\
             'Next Heading: ' + str(self.heading), 'Location: ' + str(self.location),\
             'Exploration: ' + '{:2.2%}'.format(exploration), '\n', self.map, '\n', self.map_walls,\
-            self.top_bit, self.right_bit, self.bot_bit, self.left_bit
+            '\n', self.map_count, '\n',self.top_bit, self.right_bit, self.bot_bit, self.left_bit
 
         # time_step update
         self.time_step += 1
