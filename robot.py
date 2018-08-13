@@ -49,6 +49,8 @@ class Robot(object):
             the tester to end the run and return the robot to the start.
         '''
 
+        print 'Current Heading: ' + str(self.heading)
+
         # random rotation variables
         rand_left_straight = random.randrange(-90, 0, 90)
         rand_left_right = random.randrange(-90, 90, 180)
@@ -125,7 +127,7 @@ class Robot(object):
 
             elif self.heading == 'down':
                 if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0: # open left only
-                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 0, 1
+                    self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 0, 0
                     rotation = -90
                 elif sensors[0] == 0 and sensors[1] > 0 and sensors[2] == 0: # open front only
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 1, 0
@@ -305,7 +307,7 @@ class Robot(object):
 
         # printouts for testing
         print 'Time Step: ' + str(self.time_step), 'Sensors: ' + str(sensors),\
-            'Heading: ' + str(self.heading), 'Location: ' + str(self.location),\
+            'Next Heading: ' + str(self.heading), 'Location: ' + str(self.location),\
             'Exploration: ' + '{:2.2%}'.format(exploration), '\n', self.map, '\n', self.map_walls,\
             self.top_bit, self.right_bit, self.bot_bit, self.left_bit
 
