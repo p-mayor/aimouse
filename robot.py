@@ -102,7 +102,7 @@ class Robot(object):
             elif self.heading == 'right':
                 self.heading = 'down'
 
-        # update map at current location as explored_space_value
+        # update map at current location as explored_space_value if not goal
         if self.map[self.location[0], self.location[1]] != 2:
             explored_space_value = 1
             self.map[self.location[0], self.location[1]] = explored_space_value
