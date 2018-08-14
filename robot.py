@@ -61,6 +61,7 @@ class Robot(object):
 
         print 'Current Heading: ' + str(self.heading)
 
+        # reset rotation and movement to starting values
         if self.rotation == 'Reset' and self.movement == 'Reset':
             self.rotation = 0
             self.movement = 1
@@ -316,7 +317,7 @@ class Robot(object):
 
         # plotting exploration %
         explo_list.append(exploration)
-        if self.time_step == 999:
+        if exploration >= 0.85:
             plt.plot(explo_list)
             plt.show()
 
@@ -329,10 +330,13 @@ class Robot(object):
         # time_step update
         self.time_step += 1
 
-        if self.time_step == 400:
+        # reset parameters
+        if exploration >= 0.85:
             self.rotation = 'Reset'
             self.movement = 'Reset'
             self.heading = 'up'
             self.location = [self.maze_dim-1, 0]
+            self.map = np.zeros((self.maze_dim, self.maze_dim))
+            self.map[self.maze_dim-1,0] = 1
 
         return self.rotation, self.movement
