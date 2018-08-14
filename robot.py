@@ -7,21 +7,25 @@ explo_list = []
 class Robot(object):
     def __init__(self, maze_dim):
         '''
-        Use the initialization function to set up attributes that your robot
-        will use to learn and navigate the maze. Some initial attributes are
-        provided based on common information, including the size of the maze
-        the robot is placed in.
+            Use the initialization function to set up attributes that your robot
+            will use to learn and navigate the maze. Some initial attributes are
+            provided based on common information, including the size of the maze
+            the robot is placed in.
         '''
 
         self.location = [maze_dim-1, 0]
         self.heading = 'up'
         self.maze_dim = maze_dim
+
         self.map = np.zeros((self.maze_dim, self.maze_dim))
         self.map[maze_dim-1,0] = 1
+
         self.map_walls = np.zeros((self.maze_dim, self.maze_dim))
         self.map_walls[maze_dim-1,0] = 1
+
         self.map_count = np.zeros((self.maze_dim, self.maze_dim))
         self.map_count[maze_dim-1,0] = 1
+
         self.time_step = 0
 
         # bits for mapping walls (start is always 1)
@@ -65,6 +69,7 @@ class Robot(object):
         # check sensors after move and update bits for wall map
         if self.movement == 1:
             if self.heading == 'up':
+                # check 1 way paths
                 if sensors[0] > 0 and sensors[1] == 0 and sensors[2] == 0: # open left only
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 0, 1, 1
                     rotation = -90
@@ -75,7 +80,7 @@ class Robot(object):
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 0, 1, 1, 0
                     rotation = 90
 
-                # check for 2 way paths and choose random rotation between the 2
+                # check 2 way paths and choose random rotation between the 2
                 elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] == 0: # wall on right
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 1, 1
                     rotation = rand_left_straight
@@ -86,7 +91,7 @@ class Robot(object):
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 1, 0
                     rotation = rand_right_straight
 
-                # check for 3 way paths and choose least count or random if equal
+                # check 3 way paths and choose random
                 elif sensors[0] > 0 and sensors[1] > 0 and sensors[2] > 0:
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 1, 1, 1
                     rotation = rand_rotation
