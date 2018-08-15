@@ -2,7 +2,6 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 
-explo_list = []
 
 class Robot(object):
     def __init__(self, maze_dim):
@@ -18,14 +17,18 @@ class Robot(object):
         self.rotation = 0
         self.maze_dim = maze_dim
 
+        self.goal_max = self.maze_dim/2
+        self.goal_min = self.maze_dim/2-1
+
         self.map = np.zeros((self.maze_dim, self.maze_dim))
         self.map[maze_dim-1,0] = 1
+        self.explo_list = []
 
         self.map_walls = np.zeros((self.maze_dim, self.maze_dim))
         self.map_walls[maze_dim-1,0] = 1
 
         self.map_count = np.zeros((self.maze_dim, self.maze_dim))
-        self.map_count[maze_dim-1,0] = 1
+        self.map_count[maze_dim-1,0] = 0
 
         self.time_step = 0
         self.run_count = 0
@@ -78,7 +81,6 @@ class Robot(object):
         current_space_value = 3
         goal_space_value = 2
 
-        #if self.run_count == 0:
         # check sensors after move and update self.rotation and bits for wall map
         if self.movement == 1:
             if self.heading == 'up':
@@ -263,44 +265,6 @@ class Robot(object):
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 0, 0
                     self.rotation = 90
 
-
-        # a star search implementation
-        # TODO finish implementation 
-        if self.run_count == 1:
-            h = (self.maze_dim - 2)*2 # max distance to goal w/o walls
-            g = 0 #movement cost
-            f = g + h
-            closed = []
-            open = []
-            self.f_map = np.zeros((self.maze_dim, self.maze_dim))
-            self.path_map = np.zeros((self.maze_dim, self.maze_dim))
-
-            for i in self.f_map:
-                self.f_map[i] = float('inf')
-
-            closed.append(self.location)
-
-            check_list = [(self.location[0]+1, self.location[1]),   # space to north
-                (self.location[0], self.location[1]+1),             # space to east
-                (self.location[0]-1, self.location[1]),             # space to south
-                (self.location[0], self.location[1]-1)]             # space to west
-
-            # check for map_walls
-            for i in check_list:
-                if self.map_walls[i]
-
-            # check for out of bounds locations
-            for i in check_list:
-                if i[0] > 0 and i[0] < (self.maze_dim-1):
-                    if i[1] > 0 and i[1] < (self.maze_dim-1):
-                        open.append(i)
-
-            for i in open:
-
-
-
-
-
         # update new location with map_walls bits if not time 0
         if self.time_step != 0:
             self.map_walls[self.location[0], self.location[1]] = (self.top_bit*1 + \
@@ -330,8 +294,8 @@ class Robot(object):
         if self.map[self.location[0], self.location[1]] != 2:
             self.map[self.location[0], self.location[1]] = explored_space_value
             # check for goal area (middle 2x2 square of maze) and set to goal_space_value
-            if (self.maze_dim/2)-1 <= self.location[0] and self.location[0] <= (self.maze_dim/2):
-                if (self.maze_dim/2)-1 <= self.location[1] and self.location[1] <= (self.maze_dim/2):
+            if self.goal_min <= self.location[0] and self.location[0] <= self.goal_max:
+                if self.goal_min <= self.location[1] and self.location[1] <= self.goal_max:
                     self.map[self.location[0], self.location[1]] = goal_space_value
 
         # update counter map with current location
@@ -356,20 +320,23 @@ class Robot(object):
         exploration = (current_map_value / max_map_value)
 
         # plotting exploration %
-        explo_list.append(exploration)
+        self.explo_list.append(exploration)
 
         # printouts for testing
-        print 'Time Step: ' + str(self.time_step), 'Sensors: ' + str(sensors),\
-            'Next Heading: ' + str(self.heading), 'Location: ' + str(self.location),\
-            'Exploration: ' + '{:2.2%}'.format(exploration), '\n', self.map, '\n', self.map_walls,\
-            '\n', self.map_count, '\n',self.top_bit, self.right_bit, self.bot_bit, self.left_bit
+
+        print '{:03d} [{:>2d},{:>2d},{:>2d}] {} {} {}'.format(
+            self.time_step,
+            sensors[0], sensors[1], sensors[2],
+            self.rotation,
+            self.movement,
+            self.heading)
 
         # time_step update
         self.time_step += 1
 
         # reset parameters
         if self.time_step == 500:
-            plt.plot(explo_list)
+            plt.plot(self.explo_list)
             plt.show()
             self.rotation = 'Reset'
             self.movement = 'Reset'
@@ -382,5 +349,6 @@ class Robot(object):
             self.right_bit = 0
             self.bot_bit = 0
             self.left_bit = 0
+
 
         return self.rotation, self.movement
