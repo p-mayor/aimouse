@@ -330,6 +330,9 @@ class Robot(object):
             self.rotation,
             self.movement,
             self.heading)
+        print self.map_walls
+        print self.map_count
+        print self.map
 
         # time_step update
         self.time_step += 1
