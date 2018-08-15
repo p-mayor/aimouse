@@ -28,6 +28,7 @@ class Robot(object):
         self.map_count[maze_dim-1,0] = 1
 
         self.time_step = 0
+        self.run_count = 0
 
         # bits for mapping walls (start is always 1)
         self.top_bit = 1
@@ -72,6 +73,12 @@ class Robot(object):
         rand_right_straight = random.randrange(0, 90, 90)
         rand_rotation = random.randrange(-90, 90, 90)
 
+        # exploration map values
+        explored_space_value = 1
+        current_space_value = 3
+        goal_space_value = 2
+
+        #if self.run_count == 0:
         # check sensors after move and update self.rotation and bits for wall map
         if self.movement == 1:
             if self.heading == 'up':
@@ -256,6 +263,44 @@ class Robot(object):
                     self.top_bit, self.right_bit, self.bot_bit, self.left_bit = 1, 0, 0, 0
                     self.rotation = 90
 
+
+        # a star search implementation
+        # TODO finish implementation 
+        if self.run_count == 1:
+            h = (self.maze_dim - 2)*2 # max distance to goal w/o walls
+            g = 0 #movement cost
+            f = g + h
+            closed = []
+            open = []
+            self.f_map = np.zeros((self.maze_dim, self.maze_dim))
+            self.path_map = np.zeros((self.maze_dim, self.maze_dim))
+
+            for i in self.f_map:
+                self.f_map[i] = float('inf')
+
+            closed.append(self.location)
+
+            check_list = [(self.location[0]+1, self.location[1]),   # space to north
+                (self.location[0], self.location[1]+1),             # space to east
+                (self.location[0]-1, self.location[1]),             # space to south
+                (self.location[0], self.location[1]-1)]             # space to west
+
+            # check for map_walls
+            for i in check_list:
+                if self.map_walls[i]
+
+            # check for out of bounds locations
+            for i in check_list:
+                if i[0] > 0 and i[0] < (self.maze_dim-1):
+                    if i[1] > 0 and i[1] < (self.maze_dim-1):
+                        open.append(i)
+
+            for i in open:
+
+
+
+
+
         # update new location with map_walls bits if not time 0
         if self.time_step != 0:
             self.map_walls[self.location[0], self.location[1]] = (self.top_bit*1 + \
@@ -280,11 +325,6 @@ class Robot(object):
                 self.heading = 'left'
             elif self.heading == 'right':
                 self.heading = 'down'
-
-        # exploration map values
-        explored_space_value = 1
-        current_space_value = 3
-        goal_space_value = 2
 
         # update map at current location as explored_space_value if not goal
         if self.map[self.location[0], self.location[1]] != 2:
@@ -317,9 +357,6 @@ class Robot(object):
 
         # plotting exploration %
         explo_list.append(exploration)
-        if exploration >= 0.85:
-            plt.plot(explo_list)
-            plt.show()
 
         # printouts for testing
         print 'Time Step: ' + str(self.time_step), 'Sensors: ' + str(sensors),\
@@ -331,12 +368,19 @@ class Robot(object):
         self.time_step += 1
 
         # reset parameters
-        if exploration >= 0.85:
+        if self.time_step == 500:
+            plt.plot(explo_list)
+            plt.show()
             self.rotation = 'Reset'
             self.movement = 'Reset'
             self.heading = 'up'
+            self.run_count += 1
             self.location = [self.maze_dim-1, 0]
             self.map = np.zeros((self.maze_dim, self.maze_dim))
             self.map[self.maze_dim-1,0] = 1
+            self.top_bit = 1
+            self.right_bit = 0
+            self.bot_bit = 0
+            self.left_bit = 0
 
         return self.rotation, self.movement
