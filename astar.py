@@ -1,6 +1,7 @@
+import numpy as np
 
 
-def astar(map_walls):
+def astar():
     maze_dim = 12
     h = (maze_dim - 2)*2 # max distance to goal w/o walls
     g = 10 #movement cost
@@ -13,10 +14,20 @@ def astar(map_walls):
     goal_max = maze_dim/2
     goal_min = maze_dim/2-1
 
-    # TODO create heuristic map
+    for i in range(len(h_map)):
+        for j in range(len(h_map)):
+            if i <= goal_min:
+                if j <= goal_min:
+                    h_map[i][j] = abs(i-goal_min)+abs(j-goal_min)
+                elif j > goal_min:
+                    h_map[i][j] = abs(i-goal_min)+abs(j-goal_max)
+            elif i > goal_min:
+                if j <= goal_min:
+                    h_map[i][j] = abs(i-goal_max)+abs(j-goal_min)
+                elif j > goal_min:
+                    h_map[i][j] = abs(i-goal_max)+abs(j-goal_max)
 
-    for i in h_map:
-        h_map[i] = float('inf')
+
 
     closed.append(location)
 
@@ -47,5 +58,3 @@ def astar(map_walls):
         wall_s = True
     if map_walls[adj_spaces[3]] not in [9,10,11,12,14,15]: # wall to west
         wall_w = True
-
-    
