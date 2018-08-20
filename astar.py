@@ -55,29 +55,29 @@ def adj(location):
 
     # check adj_spaces to see if empty/valid moves order = [N, E, S, W]
     checked_list = []
-    j = 0
+    j = 0 # 0 = N, 1 = E, 2 = S, 3 = W
     for i in adj_spaces:
-        print i
-        print j
+        print 'i:' + str(i)
+        print 'j:' + str(j)
         if i[0] > 0 or i[1] > 0:
             if i[0] >= 0 and i[0] < (maze_dim):
                 if i[1] >= 0 and i[1] < (maze_dim):
-                    print map_walls[i[0],i[1]]
+                    print 'walls:' + str(map_walls[i[0],i[1]])
                     if map_walls[i[0],i[1]] != 0: # check for unexplored
                         if map_walls[i[0],i[1]] not in [1,2,4,8]: #check for dead ends
                             if j == 0:
-                                if map_walls[i[0],i[1]] not in [5,6,7,12,14,15]: # wall south
+                                if map_walls[i[0],i[1]] not in [1,2,3,8,9,10,11]: # wall south
                                     checked_list.append(i)
                             if j == 1:
-                                if map_walls[i[0],i[1]] not in [9,10,11,12,14,15]: # wall west
+                                if map_walls[i[0],i[1]] not in [1,2,3,4,5,6,7]: # wall west
                                     checked_list.append(i)
                             if j == 2:
-                                if map_walls[i[0],i[1]] not in [3,5,7,9,15,13]: # wall north
+                                if map_walls[i[0],i[1]] not in [2,4,6,8,10,12,14]: # wall north
                                     checked_list.append(i)
                             if j == 3:
-                                if map_walls[i[0],i[1]] not in [3,7,15,6,14,10]: # wall east
+                                if map_walls[i[0],i[1]] not in [1,4,5,8,9,12,13,]: # wall east
                                     checked_list.append(i)
         j+=1
     return checked_list
 
-print adj([11,0])
+print adj([9,0])
