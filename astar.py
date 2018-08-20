@@ -1,7 +1,6 @@
 import numpy as np
 
-
-def astar(map_walls, time_step, location):
+def astar(map_walls, time_step, location, heading):
     maze_dim = len(map_walls)
     h = (maze_dim - 2)*2 # max distance to goal w/o walls
     g = 1 #movement cost
@@ -29,46 +28,56 @@ def astar(map_walls, time_step, location):
                 elif j > goal_min:
                     h_map[i][j] = abs(i-goal_max)+abs(j-goal_max)
 
-    # create list of adjacent cells to current
-    def adj(a):
-        list = [(a[0]+1, a[1]),   # space to north
-        (a[0], a[1]+1),             # space to east
-        (a[0]-1, a[1]),             # space to south
-        (a[0], a[1]-1)]             # space to west
-        return list
+# create list of adjacent cells to location as list [N,E,S,W]
+def adj(location):
+    adj_spaces = [(location[0]+1, location[1]),   # space to north
+    (location[0], location[1]+1),             # space to east
+    (location[0]-1, location[1]),             # space to south
+    (location[0], location[1]-1)]             # space to west
 
-    # check for out of bounds locations
+    print 'init' + str(adj_spaces)
+    maze_dim = 12
+
+    map_walls = np.array([
+        [6,12,4,6,10,10,14,14,10,8,6,12],
+        [5,7,13,7,10,10,13,3,14,14,9,5],
+        [5,5,5,5,4,6,11,14,9,7,8,5],
+        [7,9,3,9,7,11,14,9,6,15,10,9],
+        [5,4,6,12,7,10,9,6,13,5,6,12],
+        [7,15,13,5,5,6,14,13,7,13,5,5],
+        [5,5,7,13,5,3,9,3,13,7,9,5],
+        [5,7,9,3,15,10,12,2,15,9,2,13],
+        [5,3,10,12,3,14,11,12,7,10,10,13],
+        [7,14,10,13,6,15,0,5,1,6,12,5],
+        [5,5,6,9,5,5,7,13,4,5,5,5],
+        [1,3,11,10,9,3,9,3,11,11,11,9],
+    ])
+
+    # check adj_spaces to see if empty/valid moves order = [N, E, S, W]
+    checked_list = []
+    j = 0
     for i in adj_spaces:
-        if i[0] >= 0 and i[0] < (maze_dim-1):
-            if i[1] >= 0 and i[1] < (maze_dim-1):
-                open.append(i)
-                if map_walls[i] == 0: # check for unexplored
-                    open.pop(i)
-                elif map_walls[i] == 1 or map_walls[i] == 2 or\
-                 map_walls[i] == 4 or map_walls[i] == 8: #check for dead ends
-                    open.pop(i)
+        print i
+        print j
+        if i[0] > 0 or i[1] > 0:
+            if i[0] >= 0 and i[0] < (maze_dim):
+                if i[1] >= 0 and i[1] < (maze_dim):
+                    print map_walls[i[0],i[1]]
+                    if map_walls[i[0],i[1]] != 0: # check for unexplored
+                        if map_walls[i[0],i[1]] not in [1,2,4,8]: #check for dead ends
+                            if j == 0:
+                                if map_walls[i[0],i[1]] not in [5,6,7,12,14,15]: # wall south
+                                    checked_list.append(i)
+                            if j == 1:
+                                if map_walls[i[0],i[1]] not in [9,10,11,12,14,15]: # wall west
+                                    checked_list.append(i)
+                            if j == 2:
+                                if map_walls[i[0],i[1]] not in [3,5,7,9,15,13]: # wall north
+                                    checked_list.append(i)
+                            if j == 3:
+                                if map_walls[i[0],i[1]] not in [3,7,15,6,14,10]: # wall east
+                                    checked_list.append(i)
+        j+=1
+    return checked_list
 
-    # create adjacent wall bits
-    wall_n, wall_e, wall_s, wall_w = False, False, False, False
-    if adj_spaces[0] >= 0 and adj_spaces[0] < (maze_dim-1):
-        if map_walls[adj_spaces[0]] >= 0 and map_walls[adj_spaces[0]] < (maze_dim-1):
-            if map_walls[adj_spaces[0]] not in [3,5,7,9,15,13]: # wall to north
-                wall_n = True
-    if adj_spaces[1] >= 0 and adj_spaces[1] < (maze_dim-1):
-        if map_walls[adj_spaces[1]] >= 0 and map_walls[adj_spaces[1]] < (maze_dim-1):
-            if map_walls[adj_spaces[1]] not in [3,7,15,6,14,10]: # wall to east
-                wall_e = True
-    if adj_spaces[2] >= 0 and adj_spaces[2] < (maze_dim-1):
-        if map_walls[adj_spaces[2]] >= 0 and map_walls[adj_spaces[2]] < (maze_dim-1):
-            if map_walls[adj_spaces[2]] not in [5,6,7,12,14,15]: # wall to south
-                wall_s = True
-    if adj_spaces[3] >= 0 and adj_spaces[3] < (maze_dim-1):
-        if map_walls[adj_spaces[3]] >= 0 and map_walls[adj_spaces[3]] < (maze_dim-1):
-            if map_walls[adj_spaces[3]] not in [9,10,11,12,14,15]: # wall to west
-                wall_w = True
-
-    while len(open) > 0:
-        for i in open:
-            current_path.append(i)
-            closed.append(i)
-            if adj(i)
+print adj([11,0])
