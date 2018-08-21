@@ -35,10 +35,6 @@ class Robot(object):
         self.run_count = 0
 
         # bits for mapping walls (start is always 1)
-        self.top_bit = 1
-        self.right_bit = 0
-        self.bot_bit = 0
-        self.left_bit = 0
         self.movement = 1
 
 

@@ -18,11 +18,12 @@ map_walls = np.array([
 def astar(map_walls):
     maze_dim = len(map_walls)
     h = (maze_dim - 2)*2 # max distance to goal w/o walls
-    g = 1 #movement cost
+    g = 0 #movement cost
 
     h_map = np.zeros((maze_dim, maze_dim))
     goal_max = maze_dim/2
     goal_min = maze_dim/2-1
+    goal = [[goal_max, goal_min],[goal_min, goal_max], [goal_max,goal_max], [goal_min, goal_min]]
 
     # generate heuristic map
     for i in range(len(h_map)):
@@ -47,12 +48,15 @@ def astar(map_walls):
     location = [11,0]
     parent_node = []
 
-    open_spaces = adjacent([11,0])
+    open_spaces, headings = adjacent([11,0])
     open.append(open_spaces)
+
+    print open_spaces
+    print headings
 
     #TODO code astar loop
 
-    while location != goal:
+    while location not in goal:
         open_spaces = adjacent(location)
         open.append(open_spaces)
         current_path.append(location)
@@ -64,39 +68,44 @@ def astar(map_walls):
 
 # create list of adjacent cells to location as list [N,E,S,W]
 def adjacent(location):
-    adj_spaces = [(location[0]+1, location[1]),     # space to north
+    adj_spaces = [(location[0]-1, location[1]),     # space to north
     (location[0], location[1]+1),                   # space to east
-    (location[0]-1, location[1]),                   # space to south
+    (location[0]+1, location[1]),                   # space to south
     (location[0], location[1]-1)]                   # space to west
 
     print 'init:' + str(adj_spaces)
-    maze_dim = 12
+    maze_dim = len(map_walls)
 
     # check adj_spaces to see if empty/valid moves order = [N, E, S, W]
     checked_list = []
+    heading_list =[]
     j = 0                   # 0 = N, 1 = E, 2 = S, 3 = W
     for i in adj_spaces:
         print 'i:' + str(i)
         print 'j:' + str(j)
         if i[0] > 0 or i[1] > 0:
-            if i[0] >= 0 and i[0] < (maze_dim):
-                if i[1] >= 0 and i[1] < (maze_dim):
+            if i[0] >= 0 and i[0] < maze_dim:
+                if i[1] >= 0 and i[1] < maze_dim:
                     print 'walls:' + str(map_walls[i[0],i[1]])
                     if map_walls[i[0],i[1]] != 0: # check for unexplored
                         if map_walls[i[0],i[1]] not in [1,2,4,8]: #check for dead ends
                             if j == 0:
                                 if map_walls[i[0],i[1]] not in [1,2,3,8,9,10,11]: # wall south
                                     checked_list.append(i)
+                                    heading_list.append(j)
                             if j == 1:
                                 if map_walls[i[0],i[1]] not in [1,2,3,4,5,6,7]: # wall west
                                     checked_list.append(i)
+                                    heading_list.append(j)
                             if j == 2:
                                 if map_walls[i[0],i[1]] not in [2,4,6,8,10,12,14]: # wall north
                                     checked_list.append(i)
+                                    heading_list.append(j)
                             if j == 3:
                                 if map_walls[i[0],i[1]] not in [1,4,5,8,9,12,13,]: # wall east
                                     checked_list.append(i)
+                                    heading_list.append(j)
         j+=1
-    return checked_list
+    return checked_list, heading_list
 
 astar(map_walls)
